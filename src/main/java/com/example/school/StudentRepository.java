@@ -11,4 +11,8 @@ import java.util.UUID;
 public interface StudentRepository extends PagingAndSortingRepository<Student, UUID> {
 
     Page<Student> findAllByFirstNameAndSurname(String firstName, String surname, Pageable pageable);
+
+    Page<Student> findAllByFirstName(String firstName, Pageable pageable);
+
+    Page<Student> findAllBySurname(String surname, Pageable pageable);
 }

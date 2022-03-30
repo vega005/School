@@ -18,4 +18,6 @@ public interface TeacherRepository extends PagingAndSortingRepository<Teacher, U
     Page<Teacher> findAllBySurname(String surname, Pageable pageable);
 
     List<Teacher> findAllByStudentsId(UUID studentId);
+
+  //  List<Teacher> assignStudentToTeacher(UUID teacherId, AssignStudentDto assignStudentDto);
 }

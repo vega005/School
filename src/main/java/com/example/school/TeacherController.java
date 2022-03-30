@@ -12,6 +12,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/teachers")
 public class TeacherController {
+
     private final TeacherRepository teacherRepository;
 
     public TeacherController(TeacherRepository teacherRepository) {
@@ -25,14 +26,13 @@ public class TeacherController {
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "20") int size,
             @RequestParam(required = false) String sortBy,
-            @RequestParam(required = false, defaultValue = "ASC") Sort.Direction sortOrder){
+            @RequestParam(required = false, defaultValue = "ASC") Sort.Direction sortOrder) {
 
         Pageable pageable;
 
         if (sortBy == null) {
             pageable = PageRequest.of(page, size);
-        }
-        else {
+        } else {
             Sort sort = Sort.by(sortBy);
             pageable = PageRequest.of(
                     page,
@@ -40,9 +40,9 @@ public class TeacherController {
                     sortOrder.equals(Sort.Direction.DESC) ? sort.descending() : sort.ascending());
         }
         Page<Teacher> result;
-        if(firstName == null && surname == null) {
+        if (firstName == null && surname == null) {
             result = teacherRepository.findAll(pageable);
-        } else if(surname == null) {
+        } else if (surname == null) {
             result = teacherRepository.findAllByFirstName(firstName, pageable);
         } else if (firstName == null) {
             result = teacherRepository.findAllBySurname(surname, pageable);
@@ -71,8 +71,11 @@ public class TeacherController {
         return teacherRepository.save(teacher);
     }
 
-    @PostMapping("/{id}/students")
-    public Teacher addTeacher(@PathVariable("id") UUID teacherId, @RequestBody AssignStudentDto assignStudentDto) {
-
-    }
+//    @PostMapping("/{id}/students")
+//    public Teacher assignStudentToTeacher(@PathVariable("id") UUID teacherId, @RequestBody AssignStudentDto assignStudentDto) {
+//
+//
+//        //return teacherRepository.assignStudentToTeacher()
+//
+//    }
 }
