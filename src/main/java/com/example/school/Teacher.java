@@ -1,7 +1,6 @@
 package com.example.school;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import java.util.List;
@@ -18,7 +17,7 @@ public class Teacher {
     private String email;
     private String subject;
 
-    @ManyToMany(fetch= FetchType.LAZY)
+    @ManyToMany
     private List<Student> students;
 
 
@@ -68,5 +67,13 @@ public class Teacher {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    public List<Student> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<Student> students) {
+        this.students = students;
     }
 }

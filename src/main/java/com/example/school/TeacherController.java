@@ -7,16 +7,20 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/teachers")
 public class TeacherController {
 
     private final TeacherRepository teacherRepository;
+    private final StudentRepository studentRepository;
 
-    public TeacherController(TeacherRepository teacherRepository) {
+    public TeacherController(TeacherRepository teacherRepository, StudentRepository studentRepository) {
         this.teacherRepository = teacherRepository;
+        this.studentRepository = studentRepository;
     }
 
     @GetMapping
@@ -53,11 +57,6 @@ public class TeacherController {
         return result;
     }
 
-    @GetMapping("/students/{id}")
-    public List<Teacher> findAllTeachersByStudentId(@PathVariable("id") UUID studentId) {
-        return teacherRepository.findAllByStudentsId(studentId);
-    }
-
     @PostMapping
     public Teacher addTeacher(@RequestBody CreateTeacherDto teacherDto) {
         Teacher teacher = new Teacher();
@@ -71,11 +70,32 @@ public class TeacherController {
         return teacherRepository.save(teacher);
     }
 
-//    @PostMapping("/{id}/students")
-//    public Teacher assignStudentToTeacher(@PathVariable("id") UUID teacherId, @RequestBody AssignStudentDto assignStudentDto) {
-//
-//
-//        //return teacherRepository.assignStudentToTeacher()
-//
-//    }
+    @GetMapping("/{id}/studentAssignments")
+    public List<Student> getStudentsByTeacher(@PathVariable("id") UUID teacherId) {
+        return teacherRepository.findById(teacherId).map(Teacher::getStudents).get();
+
+    }
+
+    @PutMapping("/{id}/studentAssignments")
+    public void assignStudents(@PathVariable("id") UUID teacherId, @RequestBody List<UUID> studentIds) {
+
+        Optional<Teacher> teacherOpt = teacherRepository.findById(teacherId);
+
+        if(teacherOpt.isPresent()) {
+            Teacher teacher = teacherOpt.get();
+            teacher.setStudents(
+                    studentIds.stream()
+                        .map(studentRepository::findById)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toList())
+            );
+            teacherRepository.save(teacher);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteTeacher(@PathVariable("id") UUID teacherId) {
+        teacherRepository.deleteById(teacherId);
+    }
 }

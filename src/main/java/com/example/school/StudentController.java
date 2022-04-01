@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -13,9 +14,11 @@ import java.util.UUID;
 public class StudentController {
 
     private final StudentRepository studentRepository;
+    private final TeacherRepository teacherRepository;
 
-    public StudentController(StudentRepository studentRepository) {
+    public StudentController(StudentRepository studentRepository, TeacherRepository teacherRepository) {
         this.studentRepository = studentRepository;
+        this.teacherRepository = teacherRepository;
     }
 
     @GetMapping
@@ -60,5 +63,15 @@ public class StudentController {
         student.setEmail(createStudentDto.getEmail());
 
         return  studentRepository.save(student);
+    }
+
+    @GetMapping("/{id}/teachers")
+    public List<Teacher> findAllTeachersByStudentId(@PathVariable("id") UUID studentId) {
+        return teacherRepository.findAllByStudentsId(studentId);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteStudent(@PathVariable("id") UUID studentId){
+        studentRepository.deleteById(studentId);
     }
 }
